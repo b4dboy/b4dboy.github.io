@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="&amp;nbsp;&amp;nbsp;使用R清洗数据的时候发现UTF-8中文在R语言里使用nchar返回为1，str_length{stringr}返回为2, 正确的话中文在UTF-8里应该是占3个或以上的字节才对，这样我在对字符串切割的时候往往出现的结果不是我想要的。  网上搜了一圈也没找到解决办法，看来还是太小众了，为了解决这个问题我自己写了几个函数来进行处理，代码如下。  1234567891011121">
+<meta property="og:type" content="article">
+<meta property="og:title" content="R语言判断UTF-8长度和切割中文字符串">
+<meta property="og:url" content="http://secoff.net/archives/278.html">
+<meta property="og:site_name" content="Security Off">
+<meta property="og:description" content="&amp;nbsp;&amp;nbsp;使用R清洗数据的时候发现UTF-8中文在R语言里使用nchar返回为1，str_length{stringr}返回为2, 正确的话中文在UTF-8里应该是占3个或以上的字节才对，这样我在对字符串切割的时候往往出现的结果不是我想要的。  网上搜了一圈也没找到解决办法，看来还是太小众了，为了解决这个问题我自己写了几个函数来进行处理，代码如下。  1234567891011121">
+<meta property="og:updated_time" content="2017-08-01T13:30:29.323Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="R语言判断UTF-8长度和切割中文字符串">
+<meta name="twitter:description" content="&amp;nbsp;&amp;nbsp;使用R清洗数据的时候发现UTF-8中文在R语言里使用nchar返回为1，str_length{stringr}返回为2, 正确的话中文在UTF-8里应该是占3个或以上的字节才对，这样我在对字符串切割的时候往往出现的结果不是我想要的。  网上搜了一圈也没找到解决办法，看来还是太小众了，为了解决这个问题我自己写了几个函数来进行处理，代码如下。  1234567891011121">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    
+    <title>R语言判断UTF-8长度和切割中文字符串 | Security Off</title>
+    
+
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+</head>
+
+<body>
+    
+      <div id="header-post" style="padding:40px;">
+<div id="nav" class="pull-right">
+  <ul>
+     <li class="icon">
+        <a href="javascript:history.go(-1)" title="Back"><i class="fa fa-mail-reply fa-5x"></i></a>
+     </li>
+  </ul>
+</div>
+  <!--
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  -->
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/archives/290.html"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover='$("#i-prev").toggle();' onmouseout='$("#i-prev").toggle();'></i></a></li>
+        
+        
+        <li><a class="icon" href="/archives/268.html"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover='$("#i-next").toggle();' onmouseout='$("#i-next").toggle();'></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover='$("#i-top").toggle();' onmouseout='$("#i-top").toggle();'></i></a></li>
+        <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover='$("#i-share").toggle();' onmouseout='$("#i-share").toggle();' onclick='$("#share").toggle();return false;'></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://secoff.net/archives/278.html"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://secoff.net/archives/278.html&text=R语言判断UTF-8长度和切割中文字符串"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://secoff.net/archives/278.html&title=R语言判断UTF-8长度和切割中文字符串"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://secoff.net/archives/278.html&is_video=false&description=R语言判断UTF-8长度和切割中文字符串"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=R语言判断UTF-8长度和切割中文字符串&body=Check out this article: http://secoff.net/archives/278.html"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://secoff.net/archives/278.html&title=R语言判断UTF-8长度和切割中文字符串"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://secoff.net/archives/278.html&title=R语言判断UTF-8长度和切割中文字符串"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://secoff.net/archives/278.html&title=R语言判断UTF-8长度和切割中文字符串"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://secoff.net/archives/278.html&title=R语言判断UTF-8长度和切割中文字符串"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://secoff.net/archives/278.html&name=R语言判断UTF-8长度和切割中文字符串&description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+    
+    
+    <div class="content index width mx-auto px2 my4" style="max-width:58rem">
+    
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        R语言判断UTF-8长度和切割中文字符串
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Security Off</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2014-08-20T10:44:12.000Z" itemprop="datePublished">2014-08-20</time>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>&nbsp;&nbsp;使用R清洗数据的时候发现UTF-8中文在R语言里使用nchar返回为1，str_length{stringr}返回为2, 正确的话中文在UTF-8里应该是占3个或以上的字节才对，这样我在对字符串切割的时候往往出现的结果不是我想要的。</p>
+
+<p>网上搜了一圈也没找到解决办法，看来还是太小众了，为了解决这个问题我自己写了几个函数来进行处理，代码如下。</p>
+
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#判断长度的传统方法</span></div><div class="line">utf8_len &lt;- <span class="keyword">function</span>(str) &#123;</div><div class="line">  len &lt;- <span class="number">0</span></div><div class="line">  str &lt;- iconv(str, <span class="string">""</span>, to = <span class="string">"UTF-8"</span>)</div><div class="line">  bytes &lt;- strtoi(charToRaw(str), <span class="number">16L</span>)</div><div class="line">  <span class="keyword">for</span>(i <span class="keyword">in</span> bytes) &#123;</div><div class="line">    <span class="keyword">if</span>(i &lt;= <span class="number">127</span>) &#123;</div><div class="line">      len &lt;- len + <span class="number">1</span></div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(i &gt;= <span class="number">192</span> &amp;&amp; i &lt;= <span class="number">223</span>) &#123;</div><div class="line">      len &lt;- len + <span class="number">2</span></div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(i &gt;= <span class="number">224</span> &amp;&amp; i &lt;= <span class="number">239</span>) &#123;</div><div class="line">      len &lt;- len + <span class="number">3</span></div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(i &gt;= <span class="number">240</span> &amp;&amp; i &lt;= <span class="number">247</span>) &#123;</div><div class="line">      len &lt;- len + <span class="number">4</span></div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(i &gt;= <span class="number">248</span> &amp;&amp; i &lt;= <span class="number">251</span>) &#123;</div><div class="line">      len &lt;- len + <span class="number">5</span></div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(i &gt;= <span class="number">252</span> &amp;&amp; i &lt;= <span class="number">253</span>) &#123;</div><div class="line">      len &lt;- len + <span class="number">6</span></div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      <span class="keyword">next</span></div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  len</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">#判断长度简易方法</span></div><div class="line">utf8_len2 &lt;- <span class="keyword">function</span>(str, from = <span class="string">''</span>) &#123;</div><div class="line">  length(charToRaw(iconv(str, from = from, to = <span class="string">"UTF-8"</span>)))</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">#UTF-8字符串的切割</span></div><div class="line">utf8_substr &lt;- <span class="keyword">function</span>(str, start = <span class="number">1</span>, <span class="keyword">stop</span> = <span class="number">0</span>, from = <span class="string">''</span>) &#123;</div><div class="line">  raw &lt;- charToRaw(iconv(str, from = from, to = <span class="string">"UTF-8"</span>))</div><div class="line">  start &lt;- max(<span class="number">1</span>, start)</div><div class="line">  <span class="keyword">stop</span> &lt;- ifelse(<span class="keyword">stop</span> &lt;= <span class="number">1</span>, length(raw), <span class="keyword">stop</span>)</div><div class="line">  start &lt;- ifelse(start &gt; <span class="keyword">stop</span>, <span class="keyword">stop</span>, start)</div><div class="line">  newstr &lt;- iconv(rawToChar(raw[start:<span class="keyword">stop</span>]), from = <span class="string">"UTF-8"</span>, to = <span class="string">"UTF-8"</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line">str &lt;- <span class="string">"b4dboy是个大帅哥"</span></div><div class="line">print(nchar(str))</div><div class="line">print(utf8_len(str))</div><div class="line">print(utf8_len2(str, from=<span class="string">'GBK'</span>))</div><div class="line">print(utf8_substr(str, start = <span class="number">7</span>))</div><div class="line">print(utf8_substr(str, start = <span class="number">1</span>, <span class="keyword">stop</span> = <span class="number">9</span>))</div></pre></td></tr></table></figure>
+
+  </div>
+</article>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://secoff.net/archives/278.html"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://secoff.net/archives/278.html&text=R语言判断UTF-8长度和切割中文字符串"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://secoff.net/archives/278.html&title=R语言判断UTF-8长度和切割中文字符串"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://secoff.net/archives/278.html&is_video=false&description=R语言判断UTF-8长度和切割中文字符串"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=R语言判断UTF-8长度和切割中文字符串&body=Check out this article: http://secoff.net/archives/278.html"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://secoff.net/archives/278.html&title=R语言判断UTF-8长度和切割中文字符串"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://secoff.net/archives/278.html&title=R语言判断UTF-8长度和切割中文字符串"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://secoff.net/archives/278.html&title=R语言判断UTF-8长度和切割中文字符串"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://secoff.net/archives/278.html&title=R语言判断UTF-8长度和切割中文字符串"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://secoff.net/archives/278.html&name=R语言判断UTF-8长度和切割中文字符串&description="><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick='$("#toc-footer").toggle();return false;'><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <li id="share"><a class="icon" href="#" onclick='$("#share-footer").toggle();return false;'><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li>
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick='$("#nav-footer").toggle();return false;'><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+    
+    
+<div class="content index width mx-auto px2 my4" style="max-width:58rem">
+<footer id="footer" style="max-width:58rem">
+
+  <div class="footer-left">
+    Copyright &copy; 2017 b4dboy
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+<link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+

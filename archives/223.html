@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="&amp;nbsp;&amp;nbsp;很多时候我们发现程序有本地文件包含漏洞或文件读取漏洞却不知道服务器上有什么文件或在哪个文件夹下。比如前段时间我发现某程序有个本地任意文件包含漏洞，由于目标环境设置了basedir，所以我只能包含tmp目录和web目录下的文件。  &amp;nbsp;&amp;nbsp;因为无法操作web目录，所以我瞄向了tmp目录，我们知道向任意php页面发包上传文件都会在tmp目录生成临时文件(php特">
+<meta property="og:type" content="article">
+<meta property="og:title" content="php渗透测试技巧-本地文件包含">
+<meta property="og:url" content="http://secoff.net/archives/223.html">
+<meta property="og:site_name" content="Security Off">
+<meta property="og:description" content="&amp;nbsp;&amp;nbsp;很多时候我们发现程序有本地文件包含漏洞或文件读取漏洞却不知道服务器上有什么文件或在哪个文件夹下。比如前段时间我发现某程序有个本地任意文件包含漏洞，由于目标环境设置了basedir，所以我只能包含tmp目录和web目录下的文件。  &amp;nbsp;&amp;nbsp;因为无法操作web目录，所以我瞄向了tmp目录，我们知道向任意php页面发包上传文件都会在tmp目录生成临时文件(php特">
+<meta property="og:updated_time" content="2017-08-01T13:20:44.907Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="php渗透测试技巧-本地文件包含">
+<meta name="twitter:description" content="&amp;nbsp;&amp;nbsp;很多时候我们发现程序有本地文件包含漏洞或文件读取漏洞却不知道服务器上有什么文件或在哪个文件夹下。比如前段时间我发现某程序有个本地任意文件包含漏洞，由于目标环境设置了basedir，所以我只能包含tmp目录和web目录下的文件。  &amp;nbsp;&amp;nbsp;因为无法操作web目录，所以我瞄向了tmp目录，我们知道向任意php页面发包上传文件都会在tmp目录生成临时文件(php特">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    
+    <title>php渗透测试技巧-本地文件包含 | Security Off</title>
+    
+
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+</head>
+
+<body>
+    
+      <div id="header-post" style="padding:40px;">
+<div id="nav" class="pull-right">
+  <ul>
+     <li class="icon">
+        <a href="javascript:history.go(-1)" title="Back"><i class="fa fa-mail-reply fa-5x"></i></a>
+     </li>
+  </ul>
+</div>
+  <!--
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  -->
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/archives/268.html"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover='$("#i-prev").toggle();' onmouseout='$("#i-prev").toggle();'></i></a></li>
+        
+        
+        <li><a class="icon" href="/archives/245.html"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover='$("#i-next").toggle();' onmouseout='$("#i-next").toggle();'></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover='$("#i-top").toggle();' onmouseout='$("#i-top").toggle();'></i></a></li>
+        <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover='$("#i-share").toggle();' onmouseout='$("#i-share").toggle();' onclick='$("#share").toggle();return false;'></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://secoff.net/archives/223.html"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://secoff.net/archives/223.html&text=php渗透测试技巧-本地文件包含"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://secoff.net/archives/223.html&title=php渗透测试技巧-本地文件包含"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://secoff.net/archives/223.html&is_video=false&description=php渗透测试技巧-本地文件包含"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=php渗透测试技巧-本地文件包含&body=Check out this article: http://secoff.net/archives/223.html"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://secoff.net/archives/223.html&title=php渗透测试技巧-本地文件包含"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://secoff.net/archives/223.html&title=php渗透测试技巧-本地文件包含"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://secoff.net/archives/223.html&title=php渗透测试技巧-本地文件包含"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://secoff.net/archives/223.html&title=php渗透测试技巧-本地文件包含"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://secoff.net/archives/223.html&name=php渗透测试技巧-本地文件包含&description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#file-php"><span class="toc-number">1.</span> <span class="toc-text">file.php</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#payload"><span class="toc-number">2.</span> <span class="toc-text">#payload</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常用的文件操作函数大部分都受此影响"><span class="toc-number">3.</span> <span class="toc-text">常用的文件操作函数大部分都受此影响.</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    
+    <div class="content index width mx-auto px2 my4" style="max-width:58rem">
+    
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        php渗透测试技巧-本地文件包含
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Security Off</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2014-05-07T10:44:12.000Z" itemprop="datePublished">2014-05-07</time>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>&nbsp;&nbsp;很多时候我们发现程序有本地文件包含漏洞或文件读取漏洞却不知道服务器上有什么文件或在哪个文件夹下。比如前段时间我发现某程序有个本地任意文件包含漏洞，由于目标环境设置了basedir，所以我只能包含tmp目录和web目录下的文件。</p>
+
+<p>&nbsp;&nbsp;因为无法操作web目录，所以我瞄向了tmp目录，我们知道向任意php页面发包上传文件都会在tmp目录生成临时文件(php特性)，文件名前缀为php加3个或3个以上的随机大小写字母加数字。(如: php47B6) 并且存在时间只有一瞬间。</p>
+
+<p>&nbsp;&nbsp;想在这一瞬间爆破出文件名来几乎不可能，好在php在windows下有个bug，就是能使用&lt;&lt;当通配符用。使用&lt;&lt;符号相当于使用*号通配符。</p>
+
+<h3 id="file-php"><a href="#file-php" class="headerlink" title="file.php"></a>file.php</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line"> <span class="keyword">include</span>($_GET[<span class="string">'b4dboy'</span>]);</div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure>
+<h3 id="payload"><a href="#payload" class="headerlink" title="#payload"></a>#payload</h3><pre>
+http://localhost/file.php?b4dboy=../../../../../../../windows/tmp/php<<
+</pre>
+
+<p>这样就可以匹配到php47B6文件，基于这个bug我们可以很轻松的遍历出服务器上的文件和文件夹。</p>
+<p>&nbsp;&nbsp;造成这个bug的原因是由Windows APi FindFirstFile函数引起的，这是FindFirstFile的一个特性，有兴趣的可以自己用c语言来测试下。通过查看php原代码发现在win32\readdir.c，正是调用了FindFirstFile来操作文件的。所以受影响的并不止include函数。</p>
+
+<h3 id="常用的文件操作函数大部分都受此影响"><a href="#常用的文件操作函数大部分都受此影响" class="headerlink" title="常用的文件操作函数大部分都受此影响."></a>常用的文件操作函数大部分都受此影响.</h3><pre>
+include
+include_once
+require
+require_once
+fopen
+copy
+file_get_contents
+file_put_contents
+readfile
+mkdir
+move_uploaded_file
+……
+</pre>
+  </div>
+</article>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#file-php"><span class="toc-number">1.</span> <span class="toc-text">file.php</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#payload"><span class="toc-number">2.</span> <span class="toc-text">#payload</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常用的文件操作函数大部分都受此影响"><span class="toc-number">3.</span> <span class="toc-text">常用的文件操作函数大部分都受此影响.</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://secoff.net/archives/223.html"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://secoff.net/archives/223.html&text=php渗透测试技巧-本地文件包含"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://secoff.net/archives/223.html&title=php渗透测试技巧-本地文件包含"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://secoff.net/archives/223.html&is_video=false&description=php渗透测试技巧-本地文件包含"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=php渗透测试技巧-本地文件包含&body=Check out this article: http://secoff.net/archives/223.html"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://secoff.net/archives/223.html&title=php渗透测试技巧-本地文件包含"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://secoff.net/archives/223.html&title=php渗透测试技巧-本地文件包含"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://secoff.net/archives/223.html&title=php渗透测试技巧-本地文件包含"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://secoff.net/archives/223.html&title=php渗透测试技巧-本地文件包含"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://secoff.net/archives/223.html&name=php渗透测试技巧-本地文件包含&description="><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick='$("#toc-footer").toggle();return false;'><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <li id="share"><a class="icon" href="#" onclick='$("#share-footer").toggle();return false;'><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li>
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick='$("#nav-footer").toggle();return false;'><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+    
+    
+<div class="content index width mx-auto px2 my4" style="max-width:58rem">
+<footer id="footer" style="max-width:58rem">
+
+  <div class="footer-left">
+    Copyright &copy; 2017 b4dboy
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Index</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/links/">Links</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+<link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+
